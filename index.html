@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title> </title>
+<title>地震篇</title>
 
 <style>
 * {
@@ -17,12 +17,11 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #000;
+  background: #ffffff;
 }
 
 body {
-  position: fixed;
-  inset: 0;
+  font-family: sans-serif;
 }
 
 #book {
@@ -30,78 +29,79 @@ body {
   height: 100vh;
   height: 100dvh;
   margin: 0;
-  padding: 0;
 }
 
 .page {
-  background: #000;
+  background: white;
   overflow: hidden;
 }
 
 .page video {
-  display: block;
   width: 100%;
   height: 100%;
+  display: block;
   object-fit: contain;
-  background: #000;
+  background: white;
 }
 
 .stf__parent {
-  margin: 0 !important;
+  margin: 0 auto !important;
 }
+
 </style>
 </head>
 
 <body>
 
 <div id="book">
+
   <div class="page">
     <video src="./page1.mp4"
-      muted playsinline webkit-playsinline preload="auto"></video>
+      muted playsinline preload="auto"></video>
   </div>
 
   <div class="page">
     <video src="./page2.mp4"
-      muted playsinline webkit-playsinline preload="auto"></video>
+      muted playsinline preload="auto"></video>
   </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
 
 <script>
-const book = new St.PageFlip(
-  document.getElementById("book"),
-  {
-    width: 560,
-    height: 315,
-    size: "stretch",
-    minWidth: 200,
-    maxWidth: 3000,
-    minHeight: 150,
-    maxHeight: 2000,
-    showCover: false,
-    usePortrait: false,
-    startPage: 0,
-    flippingTime: 600,
-    useMouseEvents: true,
-    mobileScrollSupport: false,
-    drawShadow: false,
-    maxShadowOpacity: 0
-  }
-);
+const bookElement = document.getElementById("book");
+
+const book = new St.PageFlip(bookElement, {
+  width: 400,
+  height: 560,
+  size: "stretch",
+  minWidth: 200,
+  maxWidth: 2000,
+  minHeight: 280,
+  maxHeight: 2000,
+  showCover: false,
+  usePortrait: true,
+  startPage: 0,
+  drawShadow: true,
+  flippingTime: 700,
+  useMouseEvents: true,
+  mobileScrollSupport: false,
+  swipeDistance: 30
+});
 
 book.loadFromHTML(
   document.querySelectorAll("#book .page")
 );
 
 function playCurrentPage() {
-  const current = book.getCurrentPageIndex();
+  const currentIndex = book.getCurrentPageIndex();
   const pages = document.querySelectorAll("#book .page");
 
   pages.forEach((page, index) => {
     const video = page.querySelector("video");
 
-    if (index === current) {
+    if (index === currentIndex) {
       video.play().catch(() => {});
     } else {
       video.pause();
@@ -114,7 +114,17 @@ book.on("flip", playCurrentPage);
 
 book.on("init", playCurrentPage);
 
-setTimeout(playCurrentPage, 800);
+document.addEventListener("keydown", function(event) {
+  if (event.key === "ArrowRight") {
+    book.flipNext();
+  }
+
+  if (event.key === "ArrowLeft") {
+    book.flipPrev();
+  }
+});
+
+setTimeout(playCurrentPage, 1000);
 </script>
 
 </body>

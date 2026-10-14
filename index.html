@@ -3,30 +3,32 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>地震篇｜動態電子繪本</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>地震篇</title>
 
 <style>
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  padding: 20px 10px;
-  background: #f5efe5;
-  font-family: sans-serif;
-  text-align: center;
+* {
+  box-sizing: border-box;
 }
 
-h1 {
-  font-size: 22px;
-  color: #57483c;
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+body {
+  font-family: sans-serif;
 }
 
 #book {
-  width: min(92vw, 400px);
-  height: min(68vh, 560px);
-  min-height: 320px;
-  margin: 20px auto;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  margin: 0;
 }
 
 .page {
@@ -37,61 +39,56 @@ h1 {
 .page video {
   width: 100%;
   height: 100%;
-  object-fit: contain;
   display: block;
+  object-fit: contain;
+  background: white;
 }
 
-button {
-  border: 0;
-  border-radius: 10px;
-  padding: 12px 20px;
-  margin: 5px;
-  background: #e7c7a3;
-  font-size: 16px;
-  cursor: pointer;
+.stf__parent {
+  margin: 0 auto !important;
 }
+
 </style>
 </head>
 
 <body>
 
-<h1>地震篇｜動態電子繪本</h1>
-
 <div id="book">
+
   <div class="page">
     <video src="./page1.mp4"
-      muted playsinline preload="metadata"></video>
+      muted playsinline preload="auto"></video>
   </div>
 
   <div class="page">
     <video src="./page2.mp4"
-      muted playsinline preload="metadata"></video>
+      muted playsinline preload="auto"></video>
   </div>
-</div>
 
-<div>
-  <button id="prev">上一頁</button>
-  <button id="next">下一頁</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
 
 <script>
-const book = new St.PageFlip(
-  document.getElementById("book"),
-  {
-    width: 400,
-    height: 560,
-    size: "stretch",
-    minWidth: 280,
-    maxWidth: 400,
-    minHeight: 320,
-    maxHeight: 560,
-    showCover: false,
-    usePortrait: true,
-    mobileScrollSupport: false
-  }
-);
+const bookElement = document.getElementById("book");
+
+const book = new St.PageFlip(bookElement, {
+  width: 400,
+  height: 560,
+  size: "stretch",
+  minWidth: 200,
+  maxWidth: 2000,
+  minHeight: 280,
+  maxHeight: 2000,
+  showCover: false,
+  usePortrait: true,
+  startPage: 0,
+  drawShadow: true,
+  flippingTime: 700,
+  useMouseEvents: true,
+  mobileScrollSupport: false,
+  swipeDistance: 30
+});
 
 book.loadFromHTML(
   document.querySelectorAll("#book .page")
@@ -105,9 +102,7 @@ function playCurrentPage() {
     const video = page.querySelector("video");
 
     if (index === currentIndex) {
-      video.play().catch(() => {
-        console.log("請點擊頁面或使用播放控制開始影片");
-      });
+      video.play().catch(() => {});
     } else {
       video.pause();
       video.currentTime = 0;
@@ -117,15 +112,19 @@ function playCurrentPage() {
 
 book.on("flip", playCurrentPage);
 
-document.getElementById("prev").onclick = () => {
-  book.flipPrev();
-};
+book.on("init", playCurrentPage);
 
-document.getElementById("next").onclick = () => {
-  book.flipNext();
-};
+document.addEventListener("keydown", function(event) {
+  if (event.key === "ArrowRight") {
+    book.flipNext();
+  }
 
-setTimeout(playCurrentPage, 500);
+  if (event.key === "ArrowLeft") {
+    book.flipPrev();
+  }
+});
+
+setTimeout(playCurrentPage, 1000);
 </script>
 
 </body>

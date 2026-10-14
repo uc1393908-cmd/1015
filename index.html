@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>地震篇｜動態電子繪本</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 20px 10px;
+  background: #f5efe5;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+h1 {
+  font-size: 22px;
+  color: #57483c;
+}
+
+#book {
+  width: min(92vw, 400px);
+  height: min(68vh, 560px);
+  min-height: 320px;
+  margin: 20px auto;
+}
+
+.page {
+  background: white;
+  overflow: hidden;
+}
+
+.page video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 20px;
+  margin: 5px;
+  background: #e7c7a3;
+  font-size: 16px;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>地震篇｜動態電子繪本</h1>
+
+<div id="book">
+  <div class="page">
+    <video src="./page1.mp4"
+      muted playsinline preload="metadata"></video>
+  </div>
+
+  <div class="page">
+    <video src="./page2.mp4"
+      muted playsinline preload="metadata"></video>
+  </div>
+</div>
+
+<div>
+  <button id="prev">上一頁</button>
+  <button id="next">下一頁</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+
+<script>
+const book = new St.PageFlip(
+  document.getElementById("book"),
+  {
+    width: 400,
+    height: 560,
+    size: "stretch",
+    minWidth: 280,
+    maxWidth: 400,
+    minHeight: 320,
+    maxHeight: 560,
+    showCover: false,
+    usePortrait: true,
+    mobileScrollSupport: false
+  }
+);
+
+book.loadFromHTML(
+  document.querySelectorAll("#book .page")
+);
+
+function playCurrentPage() {
+  const currentIndex = book.getCurrentPageIndex();
+  const pages = document.querySelectorAll("#book .page");
+
+  pages.forEach((page, index) => {
+    const video = page.querySelector("video");
+
+    if (index === currentIndex) {
+      video.play().catch(() => {
+        console.log("請點擊頁面或使用播放控制開始影片");
+      });
+    } else {
+      video.pause();
+      video.currentTime = 0;
+    }
+  });
+}
+
+book.on("flip", playCurrentPage);
+
+document.getElementById("prev").onclick = () => {
+  book.flipPrev();
+};
+
+document.getElementById("next").onclick = () => {
+  book.flipNext();
+};
+
+setTimeout(playCurrentPage, 500);
+</script>
+
+</body>
+</html>
